@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Defensible Choice Study</title>
+<title>Defensibility Survey</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
 <style>
 /* Layout: single column, one scenario at a time, committee-paper reading column */
@@ -180,11 +180,12 @@ function progress(){
 function renderIntro(){
   app.innerHTML = `
   <p class="eyebrow">Research study</p>
-  <h1>Which option could a careful evaluator defend?</h1>
-  <p class="lede">This study takes <b>about 20 minutes</b>. You will read ${block.length} short
-  committee briefings. Each describes a decision and two options, and your task is to judge
-  whether one specific option could be defended on the evidence given — not whether it is the
-  one you would pick.</p>
+  <h1>Defensibility survey</h1>
+  <p class="lede">This survey is part of a research project on how people judge whether a
+  decision can be defended on the evidence available. It takes <b>about 20 minutes</b>.
+  You will read ${block.length} short committee briefings; each describes a decision and two
+  options, and your task is to judge whether one specific option could be defended on the
+  evidence given — not whether it is the one you would pick.</p>
   <div class="card">
     <h2>What we are asking</h2>
     <p>Each briefing sets out the evidence a review committee had in front of it, then two options.
@@ -206,6 +207,8 @@ function renderIntro(){
       <span>I am taking part voluntarily and agree that my anonymous answers may be used in research.</span>
     </label>
   </div>
+  <p>Thank you for giving your time to this. There are no right answers to collect, so every
+  considered response is useful — including the ones where you find the choice genuinely hard.</p>
   <div class="nav"><span class="meta">About 20 minutes · ${block.length} briefings ·
     your answers are saved when you finish.</span>
     <button class="primary" id="go" disabled>Start</button></div>`;
