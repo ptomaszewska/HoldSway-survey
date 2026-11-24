@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Defensible Choice Study</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: single column, one scenario at a time, committee-paper reading column */
+:root{
+  --paper:#FBFBF9; --ink:#191C1F; --muted:#5E676E; --rule:#DFE0DC;
+  --card:#FFFFFF; --accent:#2F6F6B; --accent-soft:#E6F0EF; --warn:#9A5B2D;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#15181A; --ink:#E8EAE7; --muted:#9BA4AA; --rule:#2B3034;
+  --card:#1C2023; --accent:#5EB0A9; --accent-soft:#1E2C2B; --warn:#C98B55; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#15181A; --ink:#E8EAE7; --muted:#9BA4AA; --rule:#2B3034;
+  --card:#1C2023; --accent:#5EB0A9; --accent-soft:#1E2C2B; --warn:#C98B55; color-scheme:dark}
+
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0}
+.wrap{max-width:46rem;margin:0 auto;padding-block:2rem 4rem}
+h1{font-family:var(--serif);font-size:1.9rem;font-weight:600;line-height:1.2;margin:0 0 .4rem;text-wrap:balance}
+h2{font-family:var(--serif);font-size:1.25rem;font-weight:600;margin:0 0 .5rem;text-wrap:balance}
+p{margin:0 0 .85rem}
+.lede{color:var(--muted);font-size:1.02rem;margin-bottom:1.6rem}
+.eyebrow{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1.25rem 1.3rem;margin-bottom:1rem}
+.evidence{font-family:var(--serif);font-size:1.05rem;line-height:1.62}
+.opts{display:grid;gap:.7rem;margin:1.1rem 0 .3rem}
+.opt{display:grid;grid-template-columns:2.1rem 1fr;gap:.7rem;align-items:start;
+  border:1px solid var(--rule);border-radius:8px;padding:.75rem .85rem;min-width:0}
+.opt .tag{font-weight:600;font-size:.78rem;letter-spacing:.06em;color:var(--accent);
+  background:var(--accent-soft);border-radius:5px;padding:.2rem 0;text-align:center}
+.opt .txt{min-width:0}
+.q{margin-top:1.4rem;padding-top:1.1rem;border-top:1px solid var(--rule)}
+.qlabel{font-weight:500;margin-bottom:.7rem}
+.choices{display:flex;flex-wrap:wrap;gap:.55rem}
+button.choice{font:inherit;font-size:.92rem;background:var(--card);color:var(--ink);
+  border:1px solid var(--rule);border-radius:7px;padding:.55rem .9rem;cursor:pointer;min-width:0}
+button.choice:hover{border-color:var(--accent)}
+button.choice[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.scale{display:grid;gap:.45rem}
+button.rung{font:inherit;font-size:.9rem;text-align:left;background:var(--card);color:var(--ink);
+  border:1px solid var(--rule);border-radius:7px;padding:.6rem .8rem;cursor:pointer;
+  display:grid;grid-template-columns:1.6rem 1fr;gap:.6rem;align-items:start;min-width:0}
+button.rung:hover{border-color:var(--accent)}
+button.rung[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+button.rung b{color:var(--accent);font-variant-numeric:tabular-nums}
+.nav{display:flex;gap:.7rem;align-items:center;justify-content:space-between;margin-top:1.4rem;flex-wrap:wrap}
+button.primary{font:inherit;font-weight:500;background:var(--accent);color:#fff;border:1px solid var(--accent);
+  border-radius:7px;padding:.6rem 1.3rem;cursor:pointer}
+button.primary[disabled]{opacity:.45;cursor:not-allowed}
+button.ghost{font:inherit;background:none;color:var(--muted);border:1px solid var(--rule);
+  border-radius:7px;padding:.6rem 1rem;cursor:pointer}
+.progress{height:4px;background:var(--rule);border-radius:3px;overflow:hidden;margin-bottom:1.5rem}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.meta{font-size:.84rem;color:var(--muted);font-variant-numeric:tabular-nums}
+textarea,select{font:inherit;width:100%;max-width:100%;background:var(--card);color:var(--ink);
+  border:1px solid var(--rule);border-radius:7px;padding:.6rem .7rem}
+textarea{min-height:5rem;resize:vertical}
+.field{margin-bottom:1rem}
+.field label{display:block;font-weight:500;margin-bottom:.4rem;font-size:.95rem}
+.note{font-size:.86rem;color:var(--muted);border-left:2px solid var(--rule);padding-left:.85rem;margin:1.1rem 0}
+.pill{display:inline-block;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--warn);font-weight:600}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:420px){.wrap{padding-block:1.25rem 3rem}h1{font-size:1.55rem}}
+</style>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;font:14px system-ui,-apple-system,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap"><div id="app"></div>
+</div>
+
+<script>
+/* ======================= CONFIGURE THIS ONE LINE ======================= */
+/* Paste the Web app URL from step 2 of DEPLOY.md between the quotes.      */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbwDYOlHMLZdvbEjZT4MhrKjewjdMBHvCiD3gPjH_I7WsNKdlE_Khd62lh5djs0SMUCrUg/exec";
+/* Optional: shown to respondents on the final page (e.g. for Prolific).  */
+const COMPLETION_CODE = "";
+const COMPLETION_URL  = "";
+/* ====================================================================== */
+
+// Anonymous per-session id. Not tied to any account.
+const RESPONDENT_ID = (crypto.randomUUID ? crypto.randomUUID()
+  : "r-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10));
+
+// Panel ids passed in the URL when recruiting via Prolific / MTurk / a mailing list:
+// ...survey_standalone.html?PROLIFIC_PID=abc&STUDY_ID=xyz   or   ?pid=p07
+const PANEL = (() => {
+  const q = new URLSearchParams(location.search), out = {};
+  for (const k of ["PROLIFIC_PID", "STUDY_ID", "SESSION_ID", "workerId", "assignmentId", "pid", "wave"]) {
+    const v = q.get(k); if (v) out[k] = v.slice(0, 120);
+  }
+  return out;
+})();
+</script>
+<script id="bank" type="application/json">[{"id": "pit_02", "d": "it_procurement", "c": "A programme board is awarding the ground segment contract for a small satellite constellation. Sable Ridge bid 4% under the independent cost estimate with a schedule the assessors rated 'low risk'; Halcyon Orbital bid 8% over but offers a more capable antenna array and an upgrade path the assessors called 'genuinely attractive'. On the combined schedule-and-cost-realism assessment Sable Ridge scores 82, Halcyon 78. The assessors flagged that Halcyon's score is dominated by a single schedule-risk item — assembly capacity — and noted that 'if that item were retired, the ranking would likely reverse'. Both bidders are credible primes with clean compliance records.", "o": ["Sable Ridge (under estimate, low schedule risk, higher assessment score)", "Halcyon Orbital (over estimate, more capable array, open assembly-capacity risk)"], "t": 1, "g": "m"}, {"id": "pit_01", "d": "it_procurement", "c": "A technology investment board is choosing between two finalists for a three-year core platform migration. The evaluation panel's composite score, weighting technical fit, delivery record, total cost of ownership and support model, came out at 7.9 for Aldercroft and 7.2 for Northmarch out of 10. Aldercroft leads on delivery record and support; Northmarch leads on raw throughput in the panel's synthetic benchmark but was marked down for a thinner reference base. The panel's own note says the gap is 'within the range where reasonable evaluators could differ' and that the synthetic benchmark may not represent the organisation's actual workload mix. Both vendors are financially sound and both bids are compliant.", "o": ["Aldercroft (higher composite score, stronger delivery record and support model)", "Northmarch (stronger raw throughput, thinner reference base, lower composite score)"], "t": 1, "g": "m"}, {"id": "purb_01", "d": "urban_planning", "c": "A transport authority board must choose between two alignments for a new light rail line. The Kestrel Corridor alignment is projected at 41,200 daily boardings by year ten; the Riverside alignment at 38,400 — a 7% difference. Kestrel is cheaper to build by about 6% and serves two existing interchanges. Riverside runs through a regeneration area whose future population is modelled with wide error bars, and the modelling team's covering note says the Riverside forecast 'is the more likely of the two to be revised upward as the zoning position settles'. Both alignments are deliverable, both clear the business case threshold, and neither displaces housing.", "o": ["Riverside alignment (lower modelled ridership, higher cost, regeneration upside)", "Kestrel Corridor (higher modelled ridership, lower capital cost, two interchanges)"], "t": 0, "g": "m"}, {"id": "purb_03", "d": "urban_planning", "c": "A council committee is choosing between two town centre parking strategies. The consolidated multi-storey option is modelled to deliver 1,180 spaces at a capital cost of £19.2m with a footfall uplift of 4.2%. The dispersed surface option delivers 1,090 spaces for £16.8m with a modelled uplift of 3.5%. The appraisal favours consolidation on uplift per pound, but records that the footfall model 'is calibrated on towns with a larger evening economy than this one, and the uplift figures should be treated as indicative'. Both options are deliverable on the same timetable.", "o": ["Consolidated multi-storey (more spaces, higher modelled footfall uplift)", "Dispersed surface parking (fewer spaces, £2.4m cheaper, lower modelled uplift)"], "t": 1, "g": "m"}, {"id": "pctm_04", "d": "clinical_research_methods", "c": "A study operations committee is choosing a recruitment strategy. The site-network strategy is projected to reach the 1,800-participant target in 22 months at a cost of £3.4m, drawing on established sites with known performance. The registry-referral strategy is projected at 26 months and £2.9m but reaches a broader population. The operations report prefers the site network on timeline, noting that the registry projection 'uses a referral-conversion rate carried over from a different therapeutic area and is the least well-evidenced number in this paper'. Both strategies are approved and neither alters the consent process.", "o": ["Site network (faster projected recruitment, higher cost, known site performance)", "Registry referral (slower projection, £0.5m cheaper, broader reach)"], "t": 1, "g": "m"}, {"id": "pctm_05", "d": "clinical_research_methods", "c": "A design committee must choose the active comparator for a non-inferiority study. Comparator Alpha is the current standard of care with a well-characterised effect size, giving a non-inferiority margin the statisticians describe as 'firmly justified'. Comparator Beta is more widely prescribed in the target population and would make the result more generalisable, but its effect size comes from a smaller evidence base, so the justified margin is wider and the required sample rises by about 10%. The design report prefers Alpha on margin justification, noting that 'Beta's evidence base is thin chiefly because the relevant trials are recent and not yet indexed'. Both are licensed and both are ethically acceptable comparators.", "o": ["Comparator Beta (wider margin, ~10% larger sample, more generalisable)", "Comparator Alpha (firmly justified margin, smaller sample, standard of care)"], "t": 0, "g": "m"}, {"id": "pedu_03", "d": "education", "c": "A trust's education board is choosing a formative assessment platform. Keywell reports a 0.14 effect size on end-of-year outcomes across five schools; Marrow reports 0.09 across three. Marrow costs 22% less and its reporting integrates with the trust's existing management system, saving an estimated three hours of teacher time per class per term. The evaluation note records that both effect sizes are drawn from vendor-commissioned studies and that 'neither has been independently replicated; the difference between them should not be over-interpreted'. Both platforms meet the data protection standard.", "o": ["Keywell (larger reported effect size, more schools, dearer, separate reporting)", "Marrow (smaller reported effect, 22% cheaper, integrated reporting)"], "t": 1, "g": "m"}, {"id": "pedu_01", "d": "education", "c": "A district curriculum board is choosing between two literacy programmes for years three to six. Brightpath shows a pooled effect size of 0.19 across four randomised evaluations; Corven Reading shows 0.13 across three, but two of the Corven studies were run in districts with demographics unlike this one, and the meta-analysts note that Corven's effect 'is larger in the single site that resembles the adopting district, though that estimate is imprecise'. Brightpath costs 8% more per pupil and requires four training days to Corven's two. Both are evidence-based and both are on the state's approved list.", "o": ["Corven Reading (smaller pooled effect, less comparable evidence base, cheaper)", "Brightpath (larger pooled effect, more evaluations, higher cost and training load)"], "t": 0, "g": "m"}, {"id": "pen_01", "d": "energy", "c": "A development committee is choosing between two consented sites for a 180MW onshore wind farm. Tarn Head's met mast gives a modelled capacity factor of 38.2% with two years of on-site data; Kelder Flats models at 36.2% with one year of on-site data plus reanalysis. Kelder Flats has a shorter grid connection, saving roughly £14m, but the resource assessment carries a wider confidence interval and the assessors note that 'a second year of data at Kelder would be expected to narrow, and could shift, the estimate'. Both sites are consented, both are buildable to the same schedule.", "o": ["Kelder Flats (lower modelled factor, wider uncertainty, £14m cheaper connection)", "Tarn Head (higher modelled capacity factor, two years of on-site data)"], "t": 0, "g": "m"}, {"id": "pen_05", "d": "energy", "c": "An asset committee is choosing a maintenance strategy for an offshore wind fleet. The scheduled-campaign strategy models 96.4% availability at £11.2m a year; the condition-based strategy models 96.1% at £10.2m. The analysis ranks scheduled campaigns first on net revenue, by about £1.0m a year. The analysis notes that the condition-based figure 'assumes sensor coverage at the level installed today, and the fleet's retrofit programme is not reflected in these numbers'. Both strategies are compliant with the operating certificate.", "o": ["Condition-based maintenance (£1.0m a year cheaper, lower modelled availability)", "Scheduled campaigns (higher modelled availability, higher cost, better net revenue)"], "t": 0, "g": "m"}, {"id": "psc_03", "d": "supply_chain", "c": "A sourcing committee must choose between consolidating a critical component with Larkfield or dual-sourcing with Larkfield and Penhale. Consolidation saves £2.5m a year on volume terms and the risk model puts the expected disruption cost at £0.7m a year, giving a net advantage of £1.8m. Dual sourcing halves modelled disruption exposure but forfeits the volume discount. The risk note records that the disruption figure 'uses the industry base rate; supplier-specific history was not available to the modellers'. Both suppliers are qualified and both meet the quality standard.", "o": ["Consolidate with Larkfield (£1.8m modelled net advantage)", "Dual source with Larkfield and Penhale (lower disruption exposure, no volume discount)"], "t": 1, "g": "m"}, {"id": "psc_02", "d": "supply_chain", "c": "An agricultural advisory panel is deciding which of two wheat cultivars to recommend for the region. Veldt-9 averaged 8.4 t/ha across four seasons of regional trials with a standard deviation of 0.6; Harrow-4 averaged 7.9 t/ha across two seasons with a standard deviation of 0.4 and carries a stronger rust resistance rating. The trials report observes that Harrow-4's two seasons 'were both unusually dry, and its performance under average rainfall is not yet well characterised'. Seed cost is comparable. Both cultivars are certified and neither raises an agronomic or regulatory concern.", "o": ["Veldt-9 (higher mean yield, four seasons of trial data)", "Harrow-4 (lower mean yield, fewer seasons, lower variance, better rust resistance)"], "t": 1, "g": "m"}, {"id": "pact_03", "d": "actuarial_insurance", "c": "A pricing committee is choosing between two rating factor sets for a motor book. The current set achieves a Gini of 0.421 on the holdout sample and is fully documented. The proposed set achieves 0.428 with three additional factors and simpler interactions. The validation report prefers the current set on documentation and stability, noting that the proposed set's uplift 'was measured on a holdout drawn from the same period as training, so its performance under distribution shift is unknown'. Both sets are compliant with the pricing rules and neither uses a prohibited characteristic.", "o": ["Proposed factor set (Gini 0.428, three new factors, untested under shift)", "Current factor set (Gini 0.421, fully documented, known stability)"], "t": 0, "g": "m"}, {"id": "pact_02", "d": "actuarial_insurance", "c": "A capital committee must choose which catastrophe model to use for windstorm exposure. Vendor model Cirrus gives a 1-in-200 loss of £340m and has the longer track record against observed events. Vendor model Halifax gives £302m and incorporates a more recent hazard set. The technical review prefers Cirrus on validation history, while recording that 'Cirrus's validation predates the 2019 hazard revision, and neither model has been validated against the post-revision event set'. Both models are accepted by the regulator for capital purposes.", "o": ["Cirrus (£340m, longer validation track record)", "Halifax (£302m, more recent hazard set, shorter track record)"], "t": 1, "g": "m"}, {"id": "pspt_04", "d": "sports_analytics", "c": "A stadium committee is choosing between two pitch surface specifications. The hybrid reinforced surface costs £1.9m and models 34 usable event-days a season beyond fixtures. The natural surface with enhanced drainage costs £1.4m and models 25. The business case prefers the hybrid on revenue per pound of capital. The turf report notes that the natural surface's figure 'assumes the current renovation window, which the events team has already indicated it wants to shorten'. Both surfaces meet the competition standard.", "o": ["Hybrid reinforced surface (more usable event-days, £1.9m, better revenue per pound)", "Natural surface with enhanced drainage (fewer modelled event-days, £0.5m cheaper)"], "t": 1, "g": "m"}, {"id": "pspt_05", "d": "sports_analytics", "c": "A governing body committee is choosing between two officials assignment systems. The performance-ranked system produces a mean assessor score of 7.6 across a season; the rotation-balanced system produces 7.2 but distributes high-profile fixtures more evenly and improves reported officiating morale. The review prefers performance ranking on assessor score, noting that assessor scores 'are known to correlate with fixture profile, and no correction for that has been applied'. Both systems satisfy the competition regulations.", "o": ["Performance-ranked assignment (higher mean assessor score)", "Rotation-balanced assignment (lower mean score, better distribution and morale)"], "t": 1, "g": "m"}, {"id": "phc_01", "d": "heritage_conservation", "c": "A conservation committee is choosing a consolidation method for a deteriorating stone facade. Lime-based repointing with sacrificial render is projected to hold for 45 years at £2.4m and is fully reversible. A consolidant treatment is projected at 33 years for £1.9m and is partially reversible. The condition report prefers the lime approach on longevity and reversibility, recording that the consolidant projection 'derives from accelerated weathering trials, which the laboratory itself describes as conservative for this stone type'. Both methods are permitted under the listing consent.", "o": ["Lime repointing with sacrificial render (longer projected life, fully reversible)", "Consolidant treatment (shorter projected life, £0.5m cheaper, partially reversible)"], "t": 1, "g": "m"}, {"id": "phc_03", "d": "heritage_conservation", "c": "A heritage committee is choosing a mitigation strategy ahead of development. Full excavation costs £3.1m and the assessment rates its knowledge recovery at 92% of the site's research potential. Preservation in situ with targeted sampling costs £1.8m and is rated at 62%, but leaves the deposits available to future techniques. The assessment prefers full excavation on recovery, noting that the in-situ rating 'applies a fixed discount for deposits left unexamined and makes no allowance for techniques not yet available'. Both strategies satisfy the planning condition.", "o": ["Full excavation (92% rated knowledge recovery, £3.1m)", "Preservation in situ with sampling (62% rated recovery, £1.3m cheaper)"], "t": 1, "g": "m"}, {"id": "ptel_01", "d": "telecoms_infrastructure", "c": "A network committee is choosing the access technology for a rural build. Full fibre reaches 24,000 premises at £680 per premise with a 30-year asset life. Fixed wireless reaches the same premises at £410 but with a 10-year refresh cycle, giving fibre the better whole-life cost per premise, £22.7 against £41.0 a year. The engineering assessment notes that the wireless refresh cycle 'follows the current equipment generation and does not account for the standard now being ratified, which materially extends equipment life'. Both technologies meet the service obligation.", "o": ["Fixed wireless (lower upfront cost, 10-year refresh, worse whole-life figure)", "Full fibre (better whole-life cost per premise, 30-year asset life)"], "t": 0, "g": "m"}, {"id": "ptel_03", "d": "telecoms_infrastructure", "c": "An operator's investment committee must prioritise deployment in one of two spectrum bands. The mid-band deployment models 1,240 Mbps of median capacity gain per site at £118k per site. The upper-band deployment models 1,480 Mbps at £180k, giving mid-band the better capacity per pound. The radio planning report notes that the upper-band figure 'assumes the current site grid; densification already funded in the capital plan is not reflected, and upper-band gains scale with site density'. Both bands are licensed and both are deployable this year.", "o": ["Upper-band (higher absolute capacity, dearer per site on current assumptions)", "Mid-band (better modelled capacity per pound on the current grid)"], "t": 0, "g": "m"}, {"id": "CW_pit_03", "d": "it_procurement", "c": "An agency board is replacing its case management system. Meridian scored 89/100 on the functional fit assessment against Calderwood's 62, and both clear the security baseline. Meridian is 5% cheaper over five years and its configuration model requires minimal bespoke development. The assessors record that the functional scores were derived from vendor demonstrations against scripted cases, and that 'fit under the agency's own case mix has not been tested by either vendor'. Both are established suppliers to comparable agencies. The evidence shows no offsetting advantage for Calderwood.", "o": ["Meridian (higher functional fit score, cheaper, minimal bespoke development)", "Calderwood (lower fit score, more expensive, configuration-only)"], "t": 1, "g": "c"}, {"id": "CW_psc_05", "d": "supply_chain", "c": "A quality committee is choosing between two cold chain packaging standards. The vacuum-panel standard holds temperature for a validated 110 hours at £30 per shipment; the phase-change standard validates at 85 hours. Both validations were run to failure rather than stopped at a protocol endpoint, so both hold times are established, not truncated. The phase-change standard's £28 unit price is more than offset by the additional packing labour and the higher reconditioning rate it carries, which the analysis costs at £4 per shipment, so it is also the more expensive standard in use. Both standards pass the regulatory requirement of 72 hours and neither affects product quality within its validated window. The evidence shows no offsetting advantage for the phase-change standard on any criterion.", "o": ["Vacuum-panel standard (longer validated hold time, lower all-in cost per shipment)", "Phase-change standard (shorter validated hold, higher all-in cost per shipment, no offsetting merit)"], "t": 1, "g": "c"}, {"id": "CW_phc_05", "d": "heritage_conservation", "c": "An archive board is choosing between two digitisation scopes within a fixed grant. High-resolution capture of the priority series covers 180,000 items and the assessment rates research value delivered at 9.0 out of 10. Standard-resolution capture across the full holdings covers 460,000 items and rates 6.0. The full holdings are already item-level discoverable through the existing catalogue, so the wider scope adds no discoverability gain, and reader statistics show negligible research demand for the non-priority series. The assessment's rating already accounts for both coverage and fidelity, and its weighting was validated against the archive's user survey, so the ranking is not an artefact of how the criteria were weighted. Both scopes are deliverable within the grant, and the evidence shows no offsetting advantage for the wider scope on any criterion.", "o": ["High-resolution priority series (highest rated research value, 180,000 items)", "Standard-resolution full holdings (lower rated research value, no discoverability gain, no offsetting merit)"], "t": 1, "g": "c"}]</script>
+<script>
+const ITEMS = JSON.parse(document.getElementById("bank").textContent);
+const MAIN = ITEMS.filter(i => i.g === "m");
+const CHECKS = ITEMS.filter(i => i.g !== "m");
+const BLOCK_MAIN = 8;            // scenarios per respondent
+const app = document.getElementById("app");
+
+const SCALE = [
+  [1, "Y is clearly inferior; no rational evaluator should prefer it."],
+  [2, "Y is weaker; only an unusual risk preference would choose it."],
+  [3, "Genuinely balanced; a careful evaluator could reasonably go either way."],
+  [4, "Y is at least as strong as X on the evidence."],
+  [5, "Y is the better choice."]
+];
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+// Each respondent sees a random block, with the target randomly placed in slot X or Y
+// so that a slot preference can be estimated and removed.
+const block = shuffle([...shuffle(MAIN).slice(0, BLOCK_MAIN), shuffle(CHECKS)[0]])
+  .map(it => ({ item: it, targetSlot: Math.random() < 0.5 ? "X" : "Y" }));
+
+const session = { startedAt: Date.now(), answers: {}, consent: false, expertise: "", comments: "" };
+let step = -1, shownAt = 0;
+
+const esc = s => { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; };
+
+function progress(){
+  const total = block.length + 2;
+  const done = Math.max(0, Math.min(step + 1, total));
+  return `<div class="progress"><i style="width:${(done/total*100).toFixed(1)}%"></i></div>`;
+}
+
+function renderIntro(){
+  app.innerHTML = `
+  <p class="eyebrow">Research study</p>
+  <h1>Which option could a careful evaluator defend?</h1>
+  <p class="lede">You will read ${block.length} short committee briefings. Each describes a decision
+  and two options. Your task is to judge whether one specific option could be defended on the
+  evidence given — not whether it is the one you would pick.</p>
+  <div class="card">
+    <h2>What we are asking</h2>
+    <p>Each briefing sets out the evidence a review committee had in front of it, then two options.
+    One of them is marked in the question. For that option you answer twice: once as a yes-or-no
+    judgement, then on a five-point scale.</p>
+    <p>There is no correct answer we are looking for. Several of these decisions are genuinely close,
+    and some are not. We want your reading of the evidence as it stands.</p>
+    <p class="meta">About ${Math.round(block.length * 1.2)}–${Math.round(block.length * 1.8)} minutes.
+    No personal data is collected beyond your answers and an anonymous identifier.</p>
+  </div>
+  <div class="card">
+    <h2>Before you start</h2>
+    <p>Judge only on the evidence in the briefing. You do not need expertise in the field —
+    each briefing contains everything needed. If a figure is not given, treat it as unknown
+    rather than assuming it.</p>
+    <label style="display:flex;gap:.6rem;align-items:flex-start;font-size:.95rem;margin-top:.9rem">
+      <input type="checkbox" id="consent" style="margin-top:.35rem">
+      <span>I am taking part voluntarily and agree that my anonymous answers may be used in research.</span>
+    </label>
+  </div>
+  <div class="nav"><span class="meta">Your answers are saved when you finish.</span>
+    <button class="primary" id="go" disabled>Start</button></div>`;
+  const c = document.getElementById("consent"), go = document.getElementById("go");
+  c.onchange = () => { go.disabled = !c.checked; session.consent = c.checked };
+  go.onclick = () => { step = 0; render() };
+}
+
+function renderItem(){
+  const { item, targetSlot } = block[step];
+  const otherSlot = targetSlot === "X" ? "Y" : "X";
+  const slots = { [targetSlot]: item.o[item.t], [otherSlot]: item.o[1 - item.t] };
+  const a = session.answers[item.id] || {};
+  shownAt = Date.now();
+  app.innerHTML = `${progress()}
+  <p class="eyebrow">Briefing ${step + 1} of ${block.length}</p>
+  <div class="card">
+    <p class="evidence">${esc(item.c)}</p>
+    <div class="opts">
+      <div class="opt"><span class="tag">X</span><span class="txt">${esc(slots.X)}</span></div>
+      <div class="opt"><span class="tag">Y</span><span class="txt">${esc(slots.Y)}</span></div>
+    </div>
+    <div class="q">
+      <p class="qlabel">Could a careful, rational evaluator reasonably prefer
+      <b>OPTION ${targetSlot}</b> over OPTION ${otherSlot} on this evidence — for example on risk,
+      robustness, or a caveat that undercuts the other option's headline advantage?</p>
+      <div class="choices" id="binary">
+        <button class="choice" data-v="DEFENSIBLE" aria-pressed="${a.binary==="DEFENSIBLE"}">Yes — defensible</button>
+        <button class="choice" data-v="INFERIOR" aria-pressed="${a.binary==="INFERIOR"}">No — clearly weaker</button>
+      </div>
+    </div>
+    <div class="q">
+      <p class="qlabel">How defensible is <b>OPTION ${targetSlot}</b> versus OPTION ${otherSlot}
+      on this evidence?</p>
+      <div class="scale" id="likert">
+        ${SCALE.map(([n, t]) => `<button class="rung" data-v="${n}" aria-pressed="${a.likert===n}">
+          <b>${n}</b><span>${esc(t).replace(/\b[XY]\b/g, L => L === "Y" ? targetSlot : otherSlot)}</span></button>`).join("")}
+      </div>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="ghost" id="back" ${step === 0 ? "disabled" : ""}>Back</button>
+    <button class="primary" id="next" disabled>${step === block.length - 1 ? "Continue" : "Next briefing"}</button>
+  </div>`;
+
+  const next = document.getElementById("next");
+  const sync = () => { next.disabled = !(session.answers[item.id]?.binary && session.answers[item.id]?.likert) };
+  const pick = (box, key, cast) => box.querySelectorAll("button").forEach(b => b.onclick = () => {
+    box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false"));
+    b.setAttribute("aria-pressed", "true");
+    session.answers[item.id] = Object.assign(session.answers[item.id] || {}, {
+      [key]: cast(b.dataset.v), targetSlot, domain: item.d,
+      role: item.g === "m" ? "main" : "attention_check",
+      ms: Date.now() - shownAt
+    });
+    sync();
+  });
+  pick(document.getElementById("binary"), "binary", String);
+  pick(document.getElementById("likert"), "likert", Number);
+  sync();
+  document.getElementById("back").onclick = () => { if (step > 0) { step--; render() } };
+  next.onclick = () => { step++; render() };
+}
+
+function renderDebrief(){
+  app.innerHTML = `${progress()}
+  <p class="eyebrow">Last page</p>
+  <h1>Two short questions</h1>
+  <div class="card">
+    <div class="field">
+      <label for="exp">Do you have professional experience in any of these areas?</label>
+      <select id="exp">
+        <option value="">Select one</option>
+        <option>No professional experience in these areas</option>
+        <option>Procurement, supply chain or contracting</option>
+        <option>Clinical research or healthcare</option>
+        <option>Engineering or infrastructure</option>
+        <option>Insurance, actuarial or risk</option>
+        <option>Education</option>
+        <option>Other professional background</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="cmt">Was anything unclear, or did any briefing feel like it was missing
+      something you needed? (optional)</label>
+      <textarea id="cmt" placeholder="Optional"></textarea>
+    </div>
+  </div>
+  <div class="nav"><button class="ghost" id="back">Back</button>
+    <button class="primary" id="submit">Submit answers</button></div>`;
+  document.getElementById("back").onclick = () => { step--; render() };
+  document.getElementById("submit").onclick = submit;
+}
+
+async function submit(){
+  session.expertise = document.getElementById("exp")?.value || "";
+  session.comments = document.getElementById("cmt")?.value || "";
+  const btn = document.getElementById("submit");
+  btn.disabled = true; btn.textContent = "Saving\u2026";
+
+  const record = {
+    respondentId: RESPONDENT_ID, panel: PANEL,
+    submittedAt: new Date().toISOString(), startedAt: new Date(session.startedAt).toISOString(),
+    durationSec: Math.round((Date.now() - session.startedAt) / 1000),
+    consent: session.consent, expertise: session.expertise, comments: session.comments,
+    block: block.map(b => ({ id: b.item.id, targetSlot: b.targetSlot })),
+    answers: session.answers, userAgent: navigator.userAgent
+  };
+
+  let saved = false, reason = "";
+  if (!ENDPOINT) {
+    reason = "No collection endpoint is configured for this copy of the survey.";
+  } else {
+    try {
+      // text/plain avoids a CORS preflight, which Apps Script and most relays reject
+      const r = await fetch(ENDPOINT, {
+        method: "POST", mode: "cors", redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(record)
+      });
+      saved = r.ok;
+      if (!r.ok) reason = "The server replied " + r.status + ".";
+    } catch (e) { reason = "The response could not be sent (network or CORS)."; }
+  }
+  renderDone(saved, reason, record);
+}
+
+function renderDone(saved, reason, record){
+  const n = Object.keys(session.answers).length;
+  app.innerHTML = `
+  <p class="eyebrow">Finished</p>
+  <h1>Thank you</h1>
+  <p class="lede">You rated ${n} briefing${n === 1 ? "" : "s"}.</p>
+  <div class="card">
+    ${saved
+      ? `<p>Your answers were recorded.</p>
+         ${COMPLETION_CODE ? `<p>Your completion code is <b>${esc(COMPLETION_CODE)}</b>.</p>` : ``}
+         ${COMPLETION_URL ? `<p><a href="${esc(COMPLETION_URL)}">Return to the study listing</a></p>` : ``}`
+      : `<p><span class="pill">Not recorded</span></p>
+         <p>${esc(reason)} Nothing is lost \u2014 copy the text below and send it to the
+         researcher; your session still counts.</p>
+         <button class="primary" id="copy" style="margin:.4rem 0 .8rem">Copy my answers</button>
+         <textarea id="dump" readonly style="font-family:ui-monospace,monospace;font-size:.78rem;min-height:8rem"></textarea>`}
+    <p class="meta">Each briefing described a real decision with the strongest case for each option
+    left intact. Some were close calls and some were not; we are studying how people tell those apart.</p>
+  </div>`;
+  if (!saved) {
+    const ta = document.getElementById("dump");
+    ta.value = JSON.stringify(record);
+    document.getElementById("copy").onclick = async (ev) => {
+      try { await navigator.clipboard.writeText(ta.value); ev.target.textContent = "Copied"; }
+      catch (e) { ta.select(); ev.target.textContent = "Select all, then copy"; }
+    };
+  }
+}
+
+function render(){
+  if (step < 0) return renderIntro();
+  if (step < block.length) return renderItem();
+  return renderDebrief();
+}
+render();
+
+</script>
+</body>
+</html>
