@@ -7,7 +7,13 @@ two options and judge whether one specified option could be defended on the evid
 beyond a webfont. Responses are posted to a collection endpoint configured at the top of the
 file.
 
-Taking part requires no account of any kind.
+Taking part requires no account of any kind. A partially completed session is kept in the
+browser's own storage, so a reload resumes where the respondent left off rather than starting a
+new draw; it is cleared once the response is submitted.
+
+## Author
+
+Paulina Tomaszewska
 
 ## Contents
 

@@ -125,13 +125,49 @@ const SCALE = [
 
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-// Each respondent sees a random block, with the target randomly placed in slot X or Y
-// so that a slot preference can be estimated and removed.
-const block = shuffle([...shuffle(MAIN).slice(0, BLOCK_MAIN), shuffle(CHECKS)[0]])
-  .map(it => ({ item: it, targetSlot: Math.random() < 0.5 ? "X" : "Y" }));
+// ---- Session persistence -------------------------------------------------
+// A reload would otherwise draw a fresh block and discard the answers so far,
+// since nothing is written to the server until Submit. State is per-browser,
+// never shared, and may be unavailable (private window, blocked site data),
+// so every access is guarded and the page works without it.
+const STORE_KEY = "holdsway-defensibility-v1";
+const BYID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 
-const session = { startedAt: Date.now(), answers: {}, consent: false, expertise: "", comments: "" };
-let step = -1, shownAt = 0;
+function saveState(){
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      v: 1, startedAt: session.startedAt, consent: session.consent, step: step,
+      answers: session.answers, expertise: session.expertise, comments: session.comments,
+      block: block.map(b => ({ id: b.item.id, targetSlot: b.targetSlot }))
+    }));
+  } catch (e) { /* storage unavailable: carry on in memory */ }
+}
+function loadState(){
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch (e) { return null; }
+}
+function clearState(){ try { localStorage.removeItem(STORE_KEY); } catch (e) {} }
+
+function freshBlock(){
+  return shuffle([...shuffle(MAIN).slice(0, BLOCK_MAIN), shuffle(CHECKS)[0]])
+    .map(it => ({ item: it, targetSlot: Math.random() < 0.5 ? "X" : "Y" }));
+}
+
+let block, session, step;
+const saved = loadState();
+// Only resume state that still matches this version of the item bank.
+if (saved && saved.v === 1 && Array.isArray(saved.block) && saved.block.length
+    && saved.block.every(b => BYID[b.id] && (b.targetSlot === "X" || b.targetSlot === "Y"))) {
+  block = saved.block.map(b => ({ item: BYID[b.id], targetSlot: b.targetSlot }));
+  session = { startedAt: saved.startedAt || Date.now(), answers: saved.answers || {},
+              consent: !!saved.consent, expertise: saved.expertise || "",
+              comments: saved.comments || "" };
+  step = typeof saved.step === "number" ? Math.max(-1, Math.min(saved.step, block.length)) : -1;
+} else {
+  block = freshBlock();
+  session = { startedAt: Date.now(), answers: {}, consent: false, expertise: "", comments: "" };
+  step = -1;
+}
+let shownAt = 0;
 
 const esc = s => { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; };
 
@@ -157,8 +193,8 @@ function renderIntro(){
     <p>There is no answer we are hoping for. Some of these decisions are genuinely close and some
     are not, and how people tell those apart is exactly what we are studying. So answer as the
     evidence reads to you, rather than trying to work out what we expect.</p>
-    <p class="meta">No personal data is collected beyond your answers and an anonymous
-    identifier.</p>
+    <p class="meta">This study is run by Paulina Tomaszewska. No personal data is collected
+    beyond your answers and an anonymous identifier.</p>
   </div>
   <div class="card">
     <h2>Before you start</h2>
@@ -174,8 +210,8 @@ function renderIntro(){
     your answers are saved when you finish.</span>
     <button class="primary" id="go" disabled>Start</button></div>`;
   const c = document.getElementById("consent"), go = document.getElementById("go");
-  c.onchange = () => { go.disabled = !c.checked; session.consent = c.checked };
-  go.onclick = () => { step = 0; render() };
+  c.onchange = () => { go.disabled = !c.checked; session.consent = c.checked; saveState() };
+  go.onclick = () => { step = 0; saveState(); render() };
 }
 
 function renderItem(){
@@ -225,13 +261,13 @@ function renderItem(){
       role: item.g === "m" ? "main" : "attention_check",
       ms: Date.now() - shownAt
     });
-    sync();
+    sync(); saveState();
   });
   pick(document.getElementById("binary"), "binary", String);
   pick(document.getElementById("likert"), "likert", Number);
   sync();
-  document.getElementById("back").onclick = () => { if (step > 0) { step--; render() } };
-  next.onclick = () => { step++; render() };
+  document.getElementById("back").onclick = () => { if (step > 0) { step--; saveState(); render() } };
+  next.onclick = () => { step++; saveState(); render() };
 }
 
 function renderDebrief(){
@@ -260,7 +296,11 @@ function renderDebrief(){
   </div>
   <div class="nav"><button class="ghost" id="back">Back</button>
     <button class="primary" id="submit">Submit answers</button></div>`;
-  document.getElementById("back").onclick = () => { step--; render() };
+  const keep = () => { session.expertise = document.getElementById("exp").value;
+    session.comments = document.getElementById("cmt").value; saveState() };
+  document.getElementById("exp").onchange = keep;
+  document.getElementById("cmt").oninput = keep;
+  document.getElementById("back").onclick = () => { step--; saveState(); render() };
   document.getElementById("submit").onclick = submit;
 }
 
@@ -291,6 +331,7 @@ async function submit(){
         body: JSON.stringify(record)
       });
       saved = r.ok;
+      if (saved) clearState();
       if (!r.ok) reason = "The server replied " + r.status + ".";
     } catch (e) { reason = "The response could not be sent (network or CORS)."; }
   }
