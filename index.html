@@ -145,18 +145,20 @@ function renderIntro(){
   app.innerHTML = `
   <p class="eyebrow">Research study</p>
   <h1>Which option could a careful evaluator defend?</h1>
-  <p class="lede">You will read ${block.length} short committee briefings. Each describes a decision
-  and two options. Your task is to judge whether one specific option could be defended on the
-  evidence given — not whether it is the one you would pick.</p>
+  <p class="lede">This study takes <b>about 20 minutes</b>. You will read ${block.length} short
+  committee briefings. Each describes a decision and two options, and your task is to judge
+  whether one specific option could be defended on the evidence given — not whether it is the
+  one you would pick.</p>
   <div class="card">
     <h2>What we are asking</h2>
     <p>Each briefing sets out the evidence a review committee had in front of it, then two options.
     One of them is marked in the question. For that option you answer twice: once as a yes-or-no
     judgement, then on a five-point scale.</p>
-    <p>There is no correct answer we are looking for. Several of these decisions are genuinely close,
-    and some are not. We want your reading of the evidence as it stands.</p>
-    <p class="meta">About 20 minutes.
-    No personal data is collected beyond your answers and an anonymous identifier.</p>
+    <p>There is no answer we are hoping for. Some of these decisions are genuinely close and some
+    are not, and how people tell those apart is exactly what we are studying. So answer as the
+    evidence reads to you, rather than trying to work out what we expect.</p>
+    <p class="meta">No personal data is collected beyond your answers and an anonymous
+    identifier.</p>
   </div>
   <div class="card">
     <h2>Before you start</h2>
@@ -168,7 +170,8 @@ function renderIntro(){
       <span>I am taking part voluntarily and agree that my anonymous answers may be used in research.</span>
     </label>
   </div>
-  <div class="nav"><span class="meta">Your answers are saved when you finish.</span>
+  <div class="nav"><span class="meta">About 20 minutes · ${block.length} briefings ·
+    your answers are saved when you finish.</span>
     <button class="primary" id="go" disabled>Start</button></div>`;
   const c = document.getElementById("consent"), go = document.getElementById("go");
   c.onchange = () => { go.disabled = !c.checked; session.consent = c.checked };
