@@ -120,7 +120,6 @@ const PANEL = (() => {
 const ITEMS = JSON.parse(document.getElementById("bank").textContent);
 const MAIN = ITEMS.filter(i => i.g === "m");
 const CHECKS = ITEMS.filter(i => i.g !== "m");
-const BLOCK_MAIN = 8;            // scenarios per respondent
 const app = document.getElementById("app");
 
 const SCALE = [
@@ -155,8 +154,12 @@ function loadState(){
 }
 function clearState(){ try { localStorage.removeItem(STORE_KEY); } catch (e) {} }
 
+// One main scenario from each domain (the bank holds two per domain), plus one check.
 function freshBlock(){
-  return shuffle([...shuffle(MAIN).slice(0, BLOCK_MAIN), shuffle(CHECKS)[0]])
+  const byDomain = {};
+  for (const it of MAIN) (byDomain[it.d] = byDomain[it.d] || []).push(it);
+  const oneEach = Object.values(byDomain).map(g => g[Math.floor(Math.random() * g.length)]);
+  return shuffle([...oneEach, shuffle(CHECKS)[0]])
     .map(it => ({ item: it, targetSlot: Math.random() < 0.5 ? "X" : "Y" }));
 }
 
