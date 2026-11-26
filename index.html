@@ -45,6 +45,14 @@ p{margin:0 0 .85rem}
 .opt.x .tag,.slot.x{color:var(--opt-x);background:var(--opt-x-soft)}
 .opt.y .tag,.slot.y{color:var(--opt-y);background:var(--opt-y-soft)}
 .slot{border-radius:4px;padding:0 .3em;white-space:nowrap}
+/* The option being rated: badge on its card, and its name in both questions */
+.opt.rated{border-width:2px;border-left-width:4px}
+.opt.x.rated{border-color:var(--opt-x)} .opt.y.rated{border-color:var(--opt-y)}
+.badge{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  border-radius:4px;padding:.1rem .45rem;margin-bottom:.3rem}
+.opt.x .badge{color:var(--opt-x);background:var(--opt-x-soft)}
+.opt.y .badge{color:var(--opt-y);background:var(--opt-y-soft)}
+.optname{font-weight:600}
 .q{margin-top:1.4rem;padding-top:1.1rem;border-top:1px solid var(--rule)}
 .qlabel{font-weight:500;margin-bottom:.7rem}
 .choices{display:flex;flex-wrap:wrap;gap:.55rem}
@@ -183,6 +191,8 @@ let shownAt = 0;
 const esc = s => { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; };
 
 const slotTag = L => `<b class="slot ${L.toLowerCase()}">OPTION ${L}</b>`;
+// The option's short name: its text before the parenthesised summary.
+const optName = o => o.split(" (")[0];
 
 function progress(){
   const total = block.length + 2;
@@ -202,7 +212,8 @@ function renderIntro(){
   <div class="card">
     <h2>What we are asking</h2>
     <p>Each briefing sets out the evidence a review committee had in front of it, then two options.
-    One of them is marked in the question. For that option you answer twice: once as a yes-or-no
+    The one you are rating is marked on its card and named in the questions. It is sometimes
+    option X and sometimes option Y, so check the label each time. For that option you answer twice: once as a yes-or-no
     judgement, then on a five-point scale.</p>
     <p>There is no answer we are hoping for. Some of these decisions are genuinely close and some
     are not, and how people tell those apart is exactly what we are studying. So answer as the
@@ -242,12 +253,14 @@ function renderItem(){
   <div class="card">
     <p class="evidence">${esc(item.c)}</p>
     <div class="opts">
-      <div class="opt x"><span class="tag">X</span><span class="txt">${esc(slots.X)}</span></div>
-      <div class="opt y"><span class="tag">Y</span><span class="txt">${esc(slots.Y)}</span></div>
+      ${["X", "Y"].map(L => `<div class="opt ${L.toLowerCase()}${L === targetSlot ? " rated" : ""}">
+        <span class="tag">${L}</span><span class="txt">${L === targetSlot
+          ? `<span class="badge">You are rating this option</span><br>` : ``}${esc(slots[L])}</span></div>`).join("")}
     </div>
     <div class="q">
       <p class="qlabel">Could a careful, rational evaluator reasonably prefer
-      ${slotTag(targetSlot)} over ${slotTag(otherSlot)} on this evidence — for example on risk,
+      ${slotTag(targetSlot)} (<span class="optname">${esc(optName(slots[targetSlot]))}</span>) over
+      ${slotTag(otherSlot)} (${esc(optName(slots[otherSlot]))}) on this evidence — for example on risk,
       robustness, or a caveat that undercuts the other option's headline advantage?</p>
       <div class="choices" id="binary">
         <button class="choice" data-v="DEFENSIBLE" aria-pressed="${a.binary==="DEFENSIBLE"}">Yes — defensible</button>
@@ -255,7 +268,8 @@ function renderItem(){
       </div>
     </div>
     <div class="q">
-      <p class="qlabel">How defensible is ${slotTag(targetSlot)} versus ${slotTag(otherSlot)}
+      <p class="qlabel">How defensible is ${slotTag(targetSlot)} (<span class="optname">${esc(optName(slots[targetSlot]))}</span>)
+      versus ${slotTag(otherSlot)} (${esc(optName(slots[otherSlot]))})
       on this evidence?</p>
       <div class="scale" id="likert">
         ${SCALE.map(([n, t]) => `<button class="rung" data-v="${n}" aria-pressed="${a.likert===n}">
