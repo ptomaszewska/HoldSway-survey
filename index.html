@@ -34,6 +34,7 @@ p{margin:0 0 .85rem}
 .eyebrow{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
 .card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1.25rem 1.3rem;margin-bottom:1rem}
 .evidence{font-family:var(--serif);font-size:1.05rem;line-height:1.62}
+.task{font-size:.92rem;color:var(--muted);border-bottom:1px solid var(--rule);padding-bottom:.7rem;margin-bottom:.9rem}
 .opts{display:grid;gap:.7rem;margin:1.1rem 0 .3rem}
 .opt{display:grid;grid-template-columns:2.1rem 1fr;gap:.7rem;align-items:start;
   border:1px solid var(--rule);border-radius:8px;padding:.75rem .85rem;min-width:0}
@@ -265,6 +266,9 @@ function renderItem(){
   app.innerHTML = `${progress()}
   <p class="eyebrow">Briefing ${step + 1} of ${block.length}</p>
   <div class="card">
+    <p class="task">A committee has to agree on one of two options. Below are the context it
+    was given and the two options. Assess whether, from your point of view, the marked option
+    is defensible on this evidence.</p>
     <p class="evidence">${esc(item.c)}</p>
     <div class="opts">
       ${["X", "Y"].map(L => `<div class="opt ${L.toLowerCase()}${L === targetSlot ? " rated" : ""}">
