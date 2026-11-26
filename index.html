@@ -82,6 +82,10 @@ textarea{min-height:5rem;resize:vertical}
 .field{margin-bottom:1rem}
 .field label{display:block;font-weight:500;margin-bottom:.4rem;font-size:.95rem}
 .note{font-size:.86rem;color:var(--muted);border-left:2px solid var(--rule);padding-left:.85rem;margin:1.1rem 0}
+.caution{border:1px solid var(--warn);border-left-width:4px;border-radius:7px;padding:.75rem .9rem;
+  margin:.9rem 0 0}
+.caution p:last-child{margin-bottom:0}
+.caution b.lbl{color:var(--warn)}
 .pill{display:inline-block;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;
   color:var(--warn);font-weight:600}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -212,9 +216,8 @@ function renderIntro(){
   <div class="card">
     <h2>What we are asking</h2>
     <p>Each briefing sets out the evidence a review committee had in front of it, then two options.
-    The one you are rating is marked on its card and named in the questions. It is sometimes
-    option X and sometimes option Y, so check the label each time. For that option you answer twice: once as a yes-or-no
-    judgement, then on a five-point scale.</p>
+    The one you are rating is marked on its card and named in the questions. For that option
+    you answer twice: once as a yes-or-no judgement, then on a five-point scale.</p>
     <p>There is no answer we are hoping for. Some of these decisions are genuinely close and some
     are not, and how people tell those apart is exactly what we are studying. So answer as the
     evidence reads to you, rather than trying to work out what we expect.</p>
@@ -226,6 +229,12 @@ function renderIntro(){
     <p>Judge only on the evidence in the briefing. You do not need expertise in the field.
     Each briefing contains everything needed. If a figure is not given, treat it as unknown
     rather than assuming it.</p>
+    <div class="caution">
+      <p><b class="lbl">Please read each question carefully.</b> The order of the two options
+      in the questions changes from briefing to briefing. Sometimes you are asked about option X
+      compared with option Y, and sometimes about option Y compared with option X. The answer
+      scale changes with it, so read the wording of each answer before choosing.</p>
+    </div>
     <label style="display:flex;gap:.6rem;align-items:flex-start;font-size:.95rem;margin-top:.9rem">
       <input type="checkbox" id="consent" style="margin-top:.35rem">
       <span>I am taking part voluntarily and agree that my anonymous answers may be used in research.</span>
