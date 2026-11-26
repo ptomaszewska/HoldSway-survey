@@ -185,11 +185,11 @@ if (saved && saved.v === 1 && Array.isArray(saved.block) && saved.block.length
   session = { startedAt: saved.startedAt || Date.now(), answers: saved.answers || {},
               consent: !!saved.consent, expertise: saved.expertise || "",
               comments: saved.comments || "" };
-  step = typeof saved.step === "number" ? Math.max(-1, Math.min(saved.step, block.length)) : -1;
+  step = typeof saved.step === "number" ? Math.max(-2, Math.min(saved.step, block.length)) : -2;
 } else {
   block = freshBlock();
   session = { startedAt: Date.now(), answers: {}, consent: false, expertise: "", comments: "" };
-  step = -1;
+  step = -2;   // -2: welcome and consent, -1: how to read the briefings, 0..: briefings
 }
 let shownAt = 0;
 
@@ -228,8 +228,8 @@ function renderIntro(){
   <div class="card">
     <h2>Before you start</h2>
     <p>Judge only on the evidence in the briefing. You do not need expertise in the field.
-    Each briefing contains everything needed. If a figure is not given, treat it as unknown
-    rather than assuming it.</p>
+    Each briefing contains everything needed. If a figure is not given, do not invent one.
+    The next page explains how to treat what a briefing leaves open.</p>
     <div class="caution">
       <p><b class="lbl">Please read each question carefully.</b> The order of the two options
       in the questions changes from briefing to briefing. Sometimes you are asked about option X
@@ -251,10 +251,38 @@ function renderIntro(){
   hard.</p>
   <div class="nav"><span class="meta">About 20 minutes · ${block.length} briefings ·
     your answers are saved when you finish.</span>
-    <button class="primary" id="go" disabled>Start</button></div>`;
+    <button class="primary" id="go" disabled>Continue</button></div>`;
   const c = document.getElementById("consent"), go = document.getElementById("go");
+  c.checked = session.consent; go.disabled = !c.checked;
   c.onchange = () => { go.disabled = !c.checked; session.consent = c.checked; saveState() };
-  go.onclick = () => { step = 0; saveState(); render() };
+  go.onclick = () => { step = -1; saveState(); render() };
+}
+
+function renderOpenness(){
+  app.innerHTML = `
+  <p class="eyebrow">Before the first briefing</p>
+  <h1>The briefings leave things open on purpose</h1>
+  <div class="card">
+    <p>Each briefing is short, and none of them tells the whole story. Some things are left
+    unsaid on purpose. For example, a briefing may not say how much risk the committee can
+    tolerate, what its budget priorities are, or how a caveat in the evidence will turn out.</p>
+    <p>That is deliberate. Real committees rarely have complete information. The question is
+    not whether the marked option wins on the figures as given.</p>
+  </div>
+  <div class="card">
+    <h2>The question you are answering</h2>
+    <p>Is there a reasonable set of circumstances, consistent with what the briefing does say,
+    under which a careful committee could defend choosing the marked option?</p>
+    <p>Do not invent facts that contradict the briefing. Do consider the gaps: what the
+    committee might reasonably value, and how the open questions might reasonably resolve.
+    If the marked option could only be defended by assuming something far-fetched, it is not
+    defensible.</p>
+  </div>
+  <div class="nav">
+    <button class="ghost" id="back">Back</button>
+    <button class="primary" id="go">Start the first briefing</button></div>`;
+  document.getElementById("back").onclick = () => { step = -2; saveState(); render() };
+  document.getElementById("go").onclick = () => { step = 0; saveState(); render() };
 }
 
 function renderItem(){
@@ -296,7 +324,7 @@ function renderItem(){
     </div>
   </div>
   <div class="nav">
-    <button class="ghost" id="back" ${step === 0 ? "disabled" : ""}>Back</button>
+    <button class="ghost" id="back">Back</button>
     <button class="primary" id="next" disabled>${step === block.length - 1 ? "Continue" : "Next briefing"}</button>
   </div>`;
 
@@ -315,7 +343,7 @@ function renderItem(){
   pick(document.getElementById("binary"), "binary", String);
   pick(document.getElementById("likert"), "likert", Number);
   sync();
-  document.getElementById("back").onclick = () => { if (step > 0) { step--; saveState(); render() } };
+  document.getElementById("back").onclick = () => { step--; saveState(); render() };
   next.onclick = () => { step++; saveState(); render() };
 }
 
@@ -417,7 +445,9 @@ function renderDone(saved, reason, record){
 }
 
 function render(){
-  if (step < 0) return renderIntro();
+  if (step === -1 && !session.consent) step = -2;   // sessions saved before this page existed
+  if (step === -2) return renderIntro();
+  if (step === -1) return renderOpenness();
   if (step < block.length) return renderItem();
   return renderDebrief();
 }
